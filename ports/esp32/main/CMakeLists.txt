@@ -1,3 +1,7 @@
+# Top-level CMake file for MicroPython ESP32 port
+
+cmake_minimum_required(VERSION 3.16)
+
 # Set location of base MicroPython directory.
 if(NOT MICROPY_DIR)
     get_filename_component(MICROPY_DIR ${CMAKE_CURRENT_LIST_DIR}/../../.. ABSOLUTE)
@@ -10,9 +14,10 @@ endif()
 
 include(${MICROPY_PORT_DIR}/esp32_common.cmake)
 
-# Add custom C++ module folder
-file(GLOB MY_CPP_SRCS ${CMAKE_CURRENT_LIST_DIR}/video/*.cpp)
-list(APPEND MICROPY_SRCS ${MY_CPP_SRCS})
-
-# Make sure headers are found
-include_directories(${CMAKE_CURRENT_LIST_DIR}/video)
+# Register the main MicroPython component
+idf_component_register(
+    SRCS
+        main.c
+    INCLUDE_DIRS
+        .
+)
