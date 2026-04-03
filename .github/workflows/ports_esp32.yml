@@ -48,11 +48,10 @@ jobs:
         idf_ver: ${{ matrix.idf_ver }}
         ccache_key: ${{ matrix.ci_func }}
 
-    # Build MicroPython firmware
+    # Build MicroPython firmware with your user module
     - name: Build ci_${{ matrix.ci_func }} on ESP-IDF ${{ matrix.idf_ver }}
       run: |
-        export USER_C_MODULES=ports/esp32/main/video/micropython.cmake
-        tools/ci.sh ${{ matrix.ci_func }}
+        tools/ci.sh ${{ matrix.ci_func }} MICROPY_USER_C_MODULES=ports/esp32/main/video/micropython.cmake
 
     # List all build files to verify
     - name: Show built files
