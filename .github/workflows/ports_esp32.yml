@@ -58,12 +58,3 @@ jobs:
       with:
         idf_ver: ${{ matrix.idf_ver }}
         ccache_key: ${{ matrix.ci_func }}
-
-
-    # Upload the firmware binaries as artifacts
-    - name: Upload firmware artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: firmware-${{ matrix.ci_func }}-${{ matrix.idf_ver }}
-        path: |
-          ports/esp32/build*/**/*.bin
