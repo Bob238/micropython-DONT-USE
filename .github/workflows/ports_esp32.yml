@@ -3,7 +3,7 @@ name: esp32 port
 on:
   workflow_dispatch:
   push:
-  pull_request:
+  workflow_dispatch:
     paths:
       - '.github/workflows/*.yml'
       - 'tools/**'
@@ -59,19 +59,8 @@ jobs:
         idf_ver: ${{ matrix.idf_ver }}
         ccache_key: ${{ matrix.ci_func }}
 
-
-    - name: Build ci_${{matrix.ci_func }} on ESP-IDF ${{ matrix.idf_ver }}
-      run: tools/ci.sh ${{ matrix.ci_func }}
-      
-     # Upload firmware binaries as artifacts
     - name: Upload firmware artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: firmware-${{ matrix.ci_func }}-${{ matrix.idf_ver }}
-        path: |
-          ports/esp32/build*/firmware.bin
-          ports/esp32/build*/bootloader.bin
-          ports/esp32/build*/partition-table.bin
-
-
-
+        name: firmware
+        path: ports/esp32/build*/**/*.bin
