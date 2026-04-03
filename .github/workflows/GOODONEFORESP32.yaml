@@ -1,0 +1,67 @@
+name: ESP32 Port
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+    paths:
+      - '.github/workflows/*.yml'
+      - 'tools/**'
+      - 'py/**'
+      - 'extmod/**'
+      - 'shared/**'
+      - 'lib/**'
+      - 'drivers/**'
+      - 'ports/esp32/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IDF_OLDEST_VER: &oldest "v5.3"
+  IDF_NEWEST_VER: &newest "v5.5.1"
+
+jobs:
+  build_idf:
+    strategy:
+      fail-fast: false
+      matrix:
+        idf_ver:
+          - *newest
+        ci_func:
+          - esp32_build_cmod_spiram_s2   # change to your board target
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+
+    # Disable extra checks for older ESP-IDF
+    - name: Disable extra checks for older ESP-IDF
+      id: check_newest_ver
+      if: ${{ matrix.idf_ver != env.IDF_NEWEST_VER }}
+      run: echo "MICROPY_MAINTAINER_BUILD=0" >> ${GITHUB_ENV}
+
+    # Setup ESP-IDF
+    - name: Setup ESP-IDF
+      uses: ./.github/actions/setup_esp32
+      with:
+        idf_ver: ${{ matrix.idf_ver }}
+        ccache_key: ${{ matrix.ci_func }}
+
+    # Build MicroPython firmware
+    - name: Build ci_${{ matrix.ci_func }} on ESP-IDF ${{ matrix.idf_ver }}
+      run: tools/ci.sh ${{ matrix.ci_func }}
+
+    # List all build files to verify
+    - name: Show built files
+      run: ls -R ports/esp32/build*
+
+    # Upload firmware binaries as artifacts
+    - name: Upload firmware artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: firmware-${{ matrix.ci_func }}-${{ matrix.idf_ver }}
+        path: |
+          ports/esp32/build*/firmware.bin
+          ports/esp32/build*/bootloader.bin
+          ports/esp32/build*/partition-table.bin
