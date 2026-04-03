@@ -1,9 +1,8 @@
 name: esp32 port
 
 on:
-  workflow_dispatch:
   push:
-  pull_request:
+  workflow_dispatch:
     paths:
       - '.github/workflows/*.yml'
       - 'tools/**'
@@ -59,23 +58,6 @@ jobs:
         idf_ver: ${{ matrix.idf_ver }}
         ccache_key: ${{ matrix.ci_func }}
 
-    - name: Build mpy-cross
-      run: make -j$(nproc) -C mpy-cross
 
-    - name: Build ESP32 firmware
-      shell: bash
-      run: |
-        source esp-idf/export.sh
-        # This executes the specific build function from your ci.sh script
-        # which is designed to produce the final .bin files
-        source tools/ci.sh
-        ${{ matrix.ci_func }}
-
-    - name: Upload firmware artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: micropython-esp32-${{ matrix.ci_func }}-${{ matrix.idf_ver }}
-        # Path matches where MicroPython typically outputs the combined firmware.bin
-        path: |
-          ports/esp32/build-*/firmware.bin
-          ports/esp32/build-*/micropython.bin
+    - name: Build ci_${{matrix.ci_func }} on ESP-IDF ${{ matrix.idf_ver }}
+      run: tools/ci.sh ${{ matrix.ci_func }}
