@@ -18,7 +18,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
+env: 
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   IDF_OLDEST_VER: &oldest "v5.3"
   IDF_NEWEST_VER: &newest "v5.5.1"
 
