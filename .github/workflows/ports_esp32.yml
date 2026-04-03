@@ -52,7 +52,7 @@ jobs:
     # Build MicroPython firmware
     - name: Build ci_${{ matrix.ci_func }} on ESP-IDF ${{ matrix.idf_ver }}
       run: |
-        export USER_C_MODULES=${{ github.workspace }}/ports/esp32/main/video
+        export USER_C_MODULES=${GITHUB_WORKSPACE}/ports/esp32/main/video/micropython.cmake
         tools/ci.sh ${{ matrix.ci_func }}
 
     # List all build files to verify
