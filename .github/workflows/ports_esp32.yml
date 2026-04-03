@@ -60,7 +60,7 @@ jobs:
         ccache_key: ${{ matrix.ci_func }}
 
     - name: Upload firmware artifacts
-    uses: actions/upload-artifact@v4
-    with:
-      name: firmware
-      path: ports/esp32/build*/**/*.bin
+      uses: actions/upload-artifact@v4
+      with:
+        name: firmware
+        path: ports/esp32/build*/**/*.bin
